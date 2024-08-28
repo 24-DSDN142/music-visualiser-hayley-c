@@ -1,15 +1,20 @@
 let firstRun = true;
+let doorArray = new Array (17); // door array
 let cloudArray = new Array(6); //cloud array
 let randomCloud = 0; 
 let cloudMove = 0; 
 let x = 0;
 let flowerBack = []; //back flower array
 let flowerFront = []; //front flower array
-
+let cloud = null;
+let cloud2 = null;
+let rand2 =0;
+let doorInterval = 100;
+let doorOpening = 7900;
 
 // vocal, drum, bass, and other are volumes ranging from 0 to 100
 function draw_one_frame(words, vocal, drum, bass, other, counter) {
-  background(172, 222, 242);
+  background(189, 227, 242);
   textFont('Verdana'); // please use CSS safe fonts
   rectMode(CENTER)
   textSize(24);
@@ -21,8 +26,16 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
       cloudArray[i] = loadImage("images/clouds/cloud" + i + ".png");
     }
 
+    for (let i = 0; i < doorArray.length; i++){
+      doorArray[i] = loadImage("images/door/door" + i + ".png");
+    }
+
     randomCloud = Math.floor(Math.random() * 6);
-   
+    cloud = new Cloud();
+
+    // rand2 = Math.floor(Math.random() * 6);
+    // cloud2 = new Cloud();
+
     grassBack = loadImage('images/field/grass/grassBack.png'); //loads back grass 
     grassMiddle = loadImage('images/field/grass/grassMiddle.png'); //loads middle grass 
     grassFront = loadImage('images/field/grass/grassFront.png'); //loads front grass 
@@ -40,6 +53,7 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   }
 
   //field
+  if(counter > 11030){
   let grassBack_move = map(drum, 0, 100, 0, 25); //drum map for back grass 
   image(grassBack, -200+grassBack_move, -15); //inserts back grass 
 
@@ -59,16 +73,104 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   push();
   image(flowerFront[flowerMove], 0, 0); //inserts pink flowers
   pop();
+  }
+  else {
+    noStroke();
+
+    let sunMap = map(bass, 0, 100, 125, 250);
+    fill(247, 237, 171);
+    circle(175, 175, sunMap);
+
+    
+    fill(151, 207, 219);
+    ellipse(360, 1125, 1750, 400);
+  
+    if(counter > doorOpening && counter <= doorOpening + doorInterval){
+    image(doorArray[1], 0, 0); 
+    }
+    else if(counter > doorOpening + doorInterval && counter <= doorOpening + (doorInterval*2)) {
+      image(doorArray[2], 0, 0); 
+    }
+    else if(counter > doorOpening + (doorInterval*2) && counter <= doorOpening + (doorInterval*3)) {
+      image(doorArray[3], 0, 0); 
+    }
+    else if(counter > doorOpening + (doorInterval*3) && counter <= doorOpening + (doorInterval*4)) {
+      image(doorArray[4], 0, 0); 
+    }
+    else if(counter > doorOpening + (doorInterval*4) && counter <= doorOpening + (doorInterval*5)) {
+      image(doorArray[5], 0, 0); 
+    }
+    else if(counter > doorOpening + (doorInterval*5) && counter <= doorOpening + (doorInterval*6)) {
+      image(doorArray[6], 0, 0); 
+    }
+    else if(counter > doorOpening + (doorInterval*6) && counter <= doorOpening + (doorInterval*7)) {
+      image(doorArray[7], 0, 0); 
+    }
+    else if(counter > doorOpening + (doorInterval*7) && counter <= doorOpening + (doorInterval*8)) {
+      image(doorArray[8], 0, 0); 
+    }
+    else if(counter > doorOpening + (doorInterval*8) && counter <= doorOpening + (doorInterval*9)) {
+      image(doorArray[9], 0, 0); 
+    }
+    else if(counter > doorOpening + (doorInterval*9) && counter <= doorOpening + (doorInterval*10)) {
+      image(doorArray[10], 0, 0); 
+    }
+    else if(counter > doorOpening + (doorInterval*10) && counter <= doorOpening + (doorInterval*11)) {
+      image(doorArray[11], 0, 0); 
+    }
+    else if(counter > doorOpening + (doorInterval*11) && counter <= doorOpening + (doorInterval*12)) {
+      image(doorArray[12], 0, 0); 
+    }
+    else if(counter > doorOpening + (doorInterval*12) && counter <= doorOpening + (doorInterval*13)) {
+      image(doorArray[13], 0, 0); 
+    }
+    else if(counter > doorOpening + (doorInterval*13) && counter <= doorOpening + (doorInterval*14)) {
+      image(doorArray[14], 0, 0); 
+    }
+    else if(counter > doorOpening + (doorInterval*14) && counter <= doorOpening + (doorInterval*15)) {
+      image(doorArray[15], 0, 0); 
+    }
+    else if(counter > doorOpening + (doorInterval*15) && counter <= 11030) {
+      image(doorArray[16], 0, 0); 
+    }
+    else{
+      image(doorArray[0], 0, 0);
+    }
+  }
+  console.log(counter)
+
+  cloud.drawCloud(vocal, cloudArray[randomCloud]);
+  // cloud2.drawCloud(vocal, cloudArray[rand2]);
 
   
 
   //clouds
-  let cloudX = map(vocal, 0, 100, 0.25, 3); //vocal map for cloud's x position rate of change
-  let cloudY = map(vocal, 0, 100, 0, 75); //vocal map for cloud's y position
-  cloudMove +=cloudX; //moves the cloud horizontally
-  image(cloudArray[randomCloud], -100+cloudMove, 100+cloudY); //inserts moving cloud
+  // let cloudX = map(vocal, 0, 100, 0.25, 3); //vocal map for cloud's x position rate of change
+  // let cloudY = map(vocal, 0, 100, 0, 75); //vocal map for cloud's y position
+  // cloudMove +=cloudX; //moves the cloud horizontally
+  // image(cloudArray[randomCloud], -100+cloudMove, 100+cloudY); //inserts moving cloud
 
 }
+
+  // Define the cloud class
+
+class Cloud {
+  #posX = 0;
+  #posY = Math.floor(Math.random() * 625);
+
+  constructor(){
+        //this.vocal = vocal;
+        //this.cloudType = cloudType
+    
+  }
+  drawCloud(vocal, cloudType){
+    let cloudX = map(vocal, 0, 100, 0.1, 1.5); //vocal map for cloud's speed
+    let cloudY = map(vocal, 0, 100, 0, 75); //vocal map for cloud's y position
+    cloudMove += cloudX; //moves the cloud horizontally
+    
+    image(cloudType, -100+cloudMove, this.#posY + cloudY); //inserts moving cloud
+  }
+} 
 
 
   //let bar_spacing = height / 10;
