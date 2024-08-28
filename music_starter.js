@@ -1,31 +1,72 @@
 let firstRun = true;
+let cloudArray = new Array(6); //cloud array
+let randomCloud = 0; 
+let cloudMove = 0; 
+let x = 0;
+let flowerBack = []; //back flower array
+let flowerFront = []; //front flower array
+
 
 // vocal, drum, bass, and other are volumes ranging from 0 to 100
 function draw_one_frame(words, vocal, drum, bass, other, counter) {
-  background(172, 222, 242)
+  background(172, 222, 242);
   textFont('Verdana'); // please use CSS safe fonts
   rectMode(CENTER)
   textSize(24);
+  
 
-  let grassFront_move = map(drum, 0, 100, 0, 50)
-  let grassMiddle_move = map(drum, 0, 100, 0, 75)
-  let grassBack_move = map(drum, 0, 100, 0, 25)
   if(firstRun){
-    cloud1 = loadImage('images/clouds/cloud1.png'); //loads cloud1
-    cloud2 = loadImage('images/clouds/cloud2.png'); //loads cloud2
-    cloud3 = loadImage('images/clouds/cloud3.png'); //loads cloud3
-    cloud4 = loadImage('images/clouds/cloud4.png'); //loads cloud4
-    cloud5 = loadImage('images/clouds/cloud5.png'); //loads cloud5
-    cloud6 = loadImage('images/clouds/cloud6.png'); //loads cloud6
-    grassBack = loadImage('images/field/grassBack.png'); //loads back grass layer
-    grassMiddle = loadImage('images/field/grassMiddle.png'); //loads middle grass layer
-    grassFront = loadImage('images/field/grassFront.png'); //loads front grass layer
-      firstRun = false;
+
+    for (let i = 0; i < cloudArray.length; i++){
+      cloudArray[i] = loadImage("images/clouds/cloud" + i + ".png");
+    }
+
+    randomCloud = Math.floor(Math.random() * 6);
+   
+    grassBack = loadImage('images/field/grass/grassBack.png'); //loads back grass 
+    grassMiddle = loadImage('images/field/grass/grassMiddle.png'); //loads middle grass 
+    grassFront = loadImage('images/field/grass/grassFront.png'); //loads front grass 
+
+    flowerBack.push(loadImage('images/field/flowers/flowerBack0.png')); //loads back right flowers
+    flowerBack.push(loadImage('images/field/flowers/flowerBack1.png')); //loads back centre flowers 
+    flowerBack.push(loadImage('images/field/flowers/flowerBack2.png')); //loads back left flowers
+    flowerFront.push(loadImage('images/field/flowers/flowerFront0.png')); //loads front right flowers 
+    flowerFront.push(loadImage('images/field/flowers/flowerFront1.png')); //loads front centre flowers
+    flowerFront.push(loadImage('images/field/flowers/flowerFront2.png')); //loads front left flowers
+    flowerPink = loadImage('images/field/flowers/flowerPink.png'); //loads pink flowers
+
+    firstRun = false;
+
   }
 
-  image(grassBack, -200+grassBack_move, 0); //inserts back grass layer 
-  image(grassMiddle, -200+grassMiddle_move, 15); //inserts middle grass layer
-  image(grassFront, -200+grassFront_move, 0); //inserts front grass layer
+  //field
+  let grassBack_move = map(drum, 0, 100, 0, 25); //drum map for back grass 
+  image(grassBack, -200+grassBack_move, -15); //inserts back grass 
+
+  let grassMiddle_move = map(drum, 0, 100, 0, 75); //drum map for middle grass 
+  image(grassMiddle, -200+grassMiddle_move, 15); //inserts middle grass 
+
+  let flowerMove = int(map(drum, 0, 100, 0, 3)); //drum map for flowers 
+  push();
+  image(flowerBack[flowerMove], 0, 0); //inserts back flowers 
+  pop();
+
+  let grassFront_move = map(drum, 0, 100, 0, 50); //drum map for front grass 
+  image(grassFront, -200+grassFront_move, 0); //inserts front grass 
+
+  let flowerPink_move = map(drum, 0, 100, 0, 15); //drum map for pink flowers 
+  image(flowerPink, 0+flowerPink_move, 0+flowerPink_move);
+  push();
+  image(flowerFront[flowerMove], 0, 0); //inserts pink flowers
+  pop();
+
+  
+
+  //clouds
+  let cloudX = map(vocal, 0, 100, 0.25, 3); //vocal map for cloud's x position rate of change
+  let cloudY = map(vocal, 0, 100, 0, 75); //vocal map for cloud's y position
+  cloudMove +=cloudX; //moves the cloud horizontally
+  image(cloudArray[randomCloud], -100+cloudMove, 100+cloudY); //inserts moving cloud
 
 }
 
