@@ -1,6 +1,8 @@
 let firstRun = true;
 let doorArray = new Array (17); // door array
 let cloudArray = new Array(6); //cloud array
+let oneVinesArray = new Array(2); //oneVines array
+let twoVinesArray = new Array(2); //twoVines array
 let randomCloud = 0; 
 let cloudMove = 0; 
 let x = 0;
@@ -9,7 +11,7 @@ let flowerFront = []; //front flower array
 let cloud = null;
 let cloud2 = null;
 let rand2 =0;
-let doorInterval = 100;
+let doorInterval = 75;
 let doorOpening = 7900;
 
 // vocal, drum, bass, and other are volumes ranging from 0 to 100
@@ -30,11 +32,22 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
       doorArray[i] = loadImage("images/door/door" + i + ".png");
     }
 
+    for (let i = 0; i < oneVinesArray.length; i++){
+      oneVinesArray[i] = loadImage("images/door/oneVines" + i + ".png");
+    }
+
+    for (let i = 0; i < twoVinesArray.length; i++){
+      twoVinesArray[i] = loadImage("images/door/twoVines" + i + ".png");
+    }
+
     randomCloud = Math.floor(Math.random() * 6);
     cloud = new Cloud();
 
     // rand2 = Math.floor(Math.random() * 6);
     // cloud2 = new Cloud();
+
+    bricks = loadImage('images/door/bricks.png'); //loads landscape 1's bricks
+    doorScene2 = loadImage('images/door/doorScene2.png'); //loads door for scene 2
 
     grassBack = loadImage('images/field/grass/grassBack.png'); //loads back grass 
     grassMiddle = loadImage('images/field/grass/grassMiddle.png'); //loads middle grass 
@@ -52,10 +65,22 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
 
   }
 
-  //field
-  if(counter > 11030){
+  //landscape 2: field
+  if(counter > 11045){
+  push();
+  background(62, 86, 163);
+  pop();
+
+  starry(drum);
+
   let grassBack_move = map(drum, 0, 100, 0, 25); //drum map for back grass 
   image(grassBack, -200+grassBack_move, -15); //inserts back grass 
+
+  image(doorScene2, 0, 0); //inserts door for scene 2
+  let vinesMove = int(map(drum, 0, 100, 0, 2)); //other map for twoVines 
+  push();
+  image(twoVinesArray[vinesMove], 0, 0); //inserts oneVines
+  pop();
 
   let grassMiddle_move = map(drum, 0, 100, 0, 75); //drum map for middle grass 
   image(grassMiddle, -200+grassMiddle_move, 15); //inserts middle grass 
@@ -73,17 +98,37 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   push();
   image(flowerFront[flowerMove], 0, 0); //inserts pink flowers
   pop();
+
   }
+//landscape 1: pond
   else {
-    noStroke();
 
-    let sunMap = map(bass, 0, 100, 125, 250);
-    fill(247, 237, 171);
-    circle(175, 175, sunMap);
+    let rayLength = map(bass, 0, 100, 100, 300);
+    let rotation = 12;
+    push();
+    translate (175,175);
 
+    rotate(counter*0.15);
+    for (let i = 0; i <= 30; i++) {
+      rotate(rotation);
+      colorMode (RGB, 255, 255, 255, 1);
+      strokeWeight(10);
+      stroke(247, 237, 171, 0.6);
+      line(0, 100, 0, rayLength, -10);
+    }
     
+    pop();
+
+    noStroke();
+    let sunMap = map(bass, 0, 100, 125, 250);
+    fill(247, 237, 171, 1);
+    circle(175, 175, sunMap);
+    
+
     fill(151, 207, 219);
     ellipse(360, 1125, 1750, 400);
+
+    image(bricks, 0, 0); //inserts bricks in landscape 1
   
     if(counter > doorOpening && counter <= doorOpening + doorInterval){
     image(doorArray[1], 0, 0); 
@@ -130,19 +175,26 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     else if(counter > doorOpening + (doorInterval*14) && counter <= doorOpening + (doorInterval*15)) {
       image(doorArray[15], 0, 0); 
     }
-    else if(counter > doorOpening + (doorInterval*15) && counter <= 11030) {
+    else if(counter > doorOpening + (doorInterval*15) && counter <= 11045) {
       image(doorArray[16], 0, 0); 
     }
     else{
       image(doorArray[0], 0, 0);
     }
-  }
-  console.log(counter)
-
-  cloud.drawCloud(vocal, cloudArray[randomCloud]);
-  // cloud2.drawCloud(vocal, cloudArray[rand2]);
+ 
+    let vinesMove = int(map(other, 0, 100, 0, 2)); //other map for oneVines 
+    push();
+    image(oneVinesArray[vinesMove], 0, 0); //inserts oneVines
+    pop();
 
   
+  console.log(counter)
+
+    cloud.drawCloud(vocal, cloudArray[randomCloud]);
+  // cloud2.drawCloud(vocal, cloudArray[rand2]);
+
+  }
+}
 
   //clouds
   // let cloudX = map(vocal, 0, 100, 0.25, 3); //vocal map for cloud's x position rate of change
@@ -150,13 +202,13 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   // cloudMove +=cloudX; //moves the cloud horizontally
   // image(cloudArray[randomCloud], -100+cloudMove, 100+cloudY); //inserts moving cloud
 
-}
+
 
   // Define the cloud class
 
 class Cloud {
   #posX = 0;
-  #posY = Math.floor(Math.random() * 625);
+  #posY = Math.floor(Math.random() * 500);
 
   constructor(){
         //this.vocal = vocal;
@@ -172,6 +224,51 @@ class Cloud {
   }
 } 
 
+function starry(drum){
+
+  let starryBright = map(drum, 0, 100, 0, 10000);
+
+  let starryArray = [
+  [640, 80],
+  [579, 124],
+  [623, 219],
+  [124, 149],
+  [489, 238],
+  [347, 345],
+  [504, 373],
+  [381, 436],
+  [242, 50],
+  [64, 380],
+  [90, 190],
+  [111, 437],
+  [50, 112],
+  [649, 410],
+  [200, 297],
+  [456, 93]
+  
+  ];
+
+  for (let i = 0; i < starryArray.length; i++) {
+    
+   let x = starryArray[i][0];
+    let y = starryArray[i][1];
+
+  push();
+  colorMode (RGB, 255, 255, 255, 10000);
+  translate(x, y);
+  scale(0.15);
+  fill(255, 255, 255, starryBright);
+  beginShape();
+  vertex(0, -100);
+  bezierVertex(0, -50, 50, 0, 50, 0);
+  bezierVertex(50, 0, 0, 50, 0, 100);
+  bezierVertex(  0, 50, -50, 0, -50, 0);
+  bezierVertex(-50, 0, 0,-50, 0,-100);
+  endShape();
+  pop();
+  
+ }
+}
 
   //let bar_spacing = height / 10;
   //  let bar_height = width / 12;
