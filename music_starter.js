@@ -78,15 +78,36 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
 
     push();
     colorMode (RGB, 255, 255, 255, 1000);
-    //blendMode(ADD);
-    let auroraBright = map(drum, 0, 100, 10, 900);
+    let auroraBright = map(drum, 0, 100, 10, 600);
     let auroraChange = map(drum, 0, 100, 0, 1);
     let auroraPink = color(214, 112, 230, auroraBright);
     let auroraPurple = color(142, 112, 230, auroraBright);
     let auroraBlend = lerpColor(auroraPink, auroraPurple, auroraChange)
     
+    let auroraWidth = map(drum, 0, 100, 0, 30)
     fill(auroraBlend);
-    circle(360, 140, 100);
+    noStroke();
+
+    beginShape();
+    vertex(375 - auroraWidth, 0);
+    bezierVertex(500 - auroraWidth, 280, 210 - auroraWidth, 320, 310 + auroraWidth, 500);
+    vertex(390  - auroraWidth, 500);
+    bezierVertex(420  + auroraWidth, 330, 650  + auroraWidth, 350, 665 + auroraWidth, 0);
+    endShape();
+
+    beginShape();
+    vertex(350 - auroraWidth, 0);
+    bezierVertex(500 - auroraWidth, 280, 220 - auroraWidth, 320, 310 + auroraWidth, 500);
+    vertex(390 - auroraWidth, 500);
+    bezierVertex(410  + auroraWidth, 330, 650  + auroraWidth, 350, 690 + auroraWidth, 0);
+    endShape();
+
+    beginShape();
+    vertex(400 - auroraWidth, 0);
+    bezierVertex(500 - auroraWidth, 280, 240 - auroraWidth, 320, 310 + auroraWidth, 500);
+    vertex(390 - auroraWidth, 500);
+    bezierVertex(390  + auroraWidth, 330, 650  + auroraWidth, 350, 640 + auroraWidth, 0);
+    endShape();
     pop();
     
     starry(drum);
