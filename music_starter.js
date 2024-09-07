@@ -3,17 +3,25 @@ let doorArray = new Array (17); // door array
 let cloudArray = new Array(6); //cloud array
 let oneVinesArray = new Array(2); //oneVines array
 let twoVinesArray = new Array(2); //twoVines array
-let randomCloud = 0; 
-let cloudMove = 0; 
+//let randomCloud = 0; 
+//let cloudMove = 0; 
 let rippleX = 250;
 let rippleY = 0;
 let gradientMove = 0;
 let x = 0;
 let flowerBack = []; //back flower array
 let flowerFront = []; //front flower array
-let doorInterval = 50;
+let doorInterval = 150;
 let doorOpening = 7900;
-//let rippleStart = map(other, 0, 100, 0, 1);
+let sunSet = 0;
+
+//cloud classes
+let cloud0;
+let cloud1;
+let cloud2;
+let cloud3;
+let cloud4;
+let cloud5;
 
 // vocal, drum, bass, and other are volumes ranging from 0 to 100
 function draw_one_frame(words, vocal, drum, bass, other, counter) {
@@ -41,8 +49,15 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
       twoVinesArray[i] = loadImage("images/door/twoVines" + i + ".png");
     }
 
-    randomCloud = Math.floor(Math.random() * 6);
-    // cloud = new Cloud();
+    //randomCloud = Math.floor(Math.random() * 6);
+    cloud0 = new Cloud(-390, 10, cloudArray[0], 1100);
+    cloud1 = new Cloud(-270, 125, cloudArray[1], 970);
+    cloud2 = new Cloud(-600, 140, cloudArray[2], 1450);
+    cloud3 = new Cloud(-400, 290, cloudArray[3], 1700);
+    cloud4 = new Cloud(-280, 400, cloudArray[4], 1200);
+    cloud5 = new Cloud(-1000, 160, cloudArray[5], 2500);
+ 
+    
 
     skyGradient = loadImage('images/skyGradient.png'); //loads gradient sky
 
@@ -64,11 +79,31 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     firstRun = false;
 
   }
+
+  cloud0.drawCloud(vocal);
+  cloud1.drawCloud(vocal);
+  cloud2.drawCloud(vocal);
+  cloud3.drawCloud(vocal);
+  cloud4.drawCloud(vocal);
+  cloud5.drawCloud(vocal);
   
   //landscape 1: pond
   if(counter < 11045){
 
-    sun(bass, counter);
+    if(counter < doorOpening){
+      sun(bass, counter, 175, 175);
+    }
+    else{
+      sunSet += 0.1;
+      sun(bass, counter, 175, 175 + sunSet);
+      push();
+      scale(0.5);
+      bigStar(other, 720, 1300)
+      pop();
+    }
+
+    let grassBack_move = map(drum, 0, 100, 0, 18); //drum map for back grass 
+    image(grassBack, -200+grassBack_move, -100); //inserts back grass 
 
     colorMode (RGB, 255, 255, 255);
     let waterChange = map(other, 0, 100, 0, 1);
@@ -77,38 +112,34 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     let waterBlend = lerpColor(waterLight, waterDark, waterChange)
     fill(waterBlend);
     ellipse(360, 1125, 1750, 400);
-  
-    
-      let rippleStroke = map(other, 0, 100, 0, 15);
-      let rippleWater = map(bass, 0, 100, 0, 0.75) ;
-      push();
-      ellipseMode(CENTER);
-      rippleX = rippleX + 1;
-      rippleY = rippleY + 0.3;
-      noFill();
-      stroke(255, 255, 255, rippleWater);
-      strokeWeight(rippleStroke);
-      ellipse(360, 1005+ rippleY*0.4, rippleX, 40 + rippleY)
 
-      rippleX = rippleX+1;
-      if(rippleX > 1500){
-        rippleX = 250;
-        rippleY = 0;
-      }
+    // draws one ripple
+        let rippleStroke = map(other, 0, 100, 0, 15); //other map for 
+        let rippleWater = map(bass, 0, 100, 0, 0.75) ;
+        push();
+        ellipseMode(CENTER);
+        rippleX = rippleX + 1;
+        rippleY = rippleY + 0.3;
+        noFill(); //ripple edge
+        stroke(255, 255, 255, rippleWater);
+        strokeWeight(rippleStroke); //
+        ellipse(360, 1005+ rippleY * 0.4, rippleX, 40 + rippleY)
+
+        rippleX = rippleX+1;
+        if(rippleX > 1500){ //maximum width of a ripple
+          rippleX = 250; //resets x coordinate for new ripple
+          rippleY = 0; //resets y coordinate for new ripple
+        }
 
     image(bricks, 0, 0); //inserts bricks in landscape 1
 
-    openDoor(counter);
+    openDoor(counter); //opens the door
 
     let vinesMove = int(map(other, 0, 100, 0, 2)); //other map for oneVines 
     push();
-    image(oneVinesArray[vinesMove], 0, 0); //inserts oneVines
+    image(oneVinesArray[vinesMove], 0, 0); //inserts vines for landscape 1 (oneVines)
     pop();
 
-   // bigStar(other, 275, 750)
-
-
-   //drawClouds(vocal, cloudArray[randomCloud]);
   }
 
 //landscape 2: flower field
@@ -131,17 +162,17 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     noStroke();
 
     beginShape();
-    vertex(375 - auroraWidth, 0);
-    bezierVertex(500 - auroraWidth, 280, 210 - auroraWidth, 320, 310 + auroraWidth, 500);
-    vertex(390  - auroraWidth, 500);
-    bezierVertex(420  + auroraWidth, 330, 650  + auroraWidth, 350, 665 + auroraWidth, 0);
-    endShape();
-
-    beginShape();
     vertex(350 - auroraWidth, 0);
     bezierVertex(500 - auroraWidth, 280, 220 - auroraWidth, 320, 310 + auroraWidth, 500);
     vertex(390 - auroraWidth, 500);
     bezierVertex(410  + auroraWidth, 330, 650  + auroraWidth, 350, 690 + auroraWidth, 0);
+    endShape();
+
+    beginShape(); //middle aurora
+    vertex(375 - auroraWidth, 0);
+    bezierVertex(500 - auroraWidth, 280, 210 - auroraWidth, 320, 310 + auroraWidth, 500);
+    vertex(390  - auroraWidth, 500);
+    bezierVertex(420  + auroraWidth, 330, 650  + auroraWidth, 350, 665 + auroraWidth, 0);
     endShape();
 
     beginShape();
@@ -152,16 +183,20 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     endShape();
     pop();
     
-    starry(drum);
-    sparkle(drum);
+    starry(drum); //
+    sparkle(drum); //
 
     push();
-    translate(375, 545);
+    translate(415, 580);
     scale(0.25);
-    sun(bass, counter);
+    sun(bass, counter, 0, 0);
     pop();
     
-
+    push();
+    scale(1.5);
+    bigStar(other, 180, 240);
+    pop();
+    
     let grassBack_move = map(drum, 0, 100, 0, 25); //drum map for back grass 
     image(grassBack, -200+grassBack_move, -15); //inserts back grass 
 
@@ -187,66 +222,9 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     push();
     image(flowerFront[flowerMove], 0, 0); //inserts pink flowers
     pop();
-
-  
-    
-    // if(counter > doorOpening && counter <= doorOpening + doorInterval){
-    //   image(doorArray[1], 0, 0); 
-    // }
-    // else if(counter > doorOpening + doorInterval && counter <= doorOpening + (doorInterval*2)) {
-    //   image(doorArray[2], 0, 0); 
-    // }
-    // else if(counter > doorOpening + (doorInterval*2) && counter <= doorOpening + (doorInterval*3)) {
-    //   image(doorArray[3], 0, 0); 
-    // }
-    // else if(counter > doorOpening + (doorInterval*3) && counter <= doorOpening + (doorInterval*4)) {
-    //   image(doorArray[4], 0, 0); 
-    // }
-    // else if(counter > doorOpening + (doorInterval*4) && counter <= doorOpening + (doorInterval*5)) {
-    //   image(doorArray[5], 0, 0); 
-    // }
-    // else if(counter > doorOpening + (doorInterval*5) && counter <= doorOpening + (doorInterval*6)) {
-    //   image(doorArray[6], 0, 0); 
-    // }
-    // else if(counter > doorOpening + (doorInterval*6) && counter <= doorOpening + (doorInterval*7)) {
-    //   image(doorArray[7], 0, 0); 
-    // }
-    // else if(counter > doorOpening + (doorInterval*7) && counter <= doorOpening + (doorInterval*8)) {
-    //   image(doorArray[8], 0, 0); 
-    // }
-    // else if(counter > doorOpening + (doorInterval*8) && counter <= doorOpening + (doorInterval*9)) {
-    //   image(doorArray[9], 0, 0); 
-    // }
-    // else if(counter > doorOpening + (doorInterval*9) && counter <= doorOpening + (doorInterval*10)) {
-    //   image(doorArray[10], 0, 0); 
-    // }
-    // else if(counter > doorOpening + (doorInterval*10) && counter <= doorOpening + (doorInterval*11)) {
-    //   image(doorArray[11], 0, 0); 
-    // }
-    // else if(counter > doorOpening + (doorInterval*11) && counter <= doorOpening + (doorInterval*12)) {
-    //   image(doorArray[12], 0, 0); 
-    // }
-    // else if(counter > doorOpening + (doorInterval*12) && counter <= doorOpening + (doorInterval*13)) {
-    //   image(doorArray[13], 0, 0); 
-    // }
-    // else if(counter > doorOpening + (doorInterval*13) && counter <= doorOpening + (doorInterval*14)) {
-    //   image(doorArray[14], 0, 0); 
-    // }
-    // else if(counter > doorOpening + (doorInterval*14) && counter <= doorOpening + (doorInterval*15)) {
-    //   image(doorArray[15], 0, 0); 
-    // }
-    // else if(counter > doorOpening + (doorInterval*15) && counter <= 11045) {
-    //   image(doorArray[16], 0, 0); 
-    // }
-    // else{
-    //   image(doorArray[0], 0, 0);
-    // }
-
-    //cloud.drawCloud(vocal, cloudArray[randomCloud]);
-  // cloud2.drawCloud(vocal, cloudArray[rand2]);
+  }
 
   }
-}
 
 function openDoor(counter){
   if(counter > doorOpening && counter <= doorOpening + doorInterval){
@@ -302,62 +280,54 @@ function openDoor(counter){
   }
 }
 
-function drawClouds(vocal, cloudType){
-  let cloudPosY = 300; //Math.floor(Math.random() * 500);
-  let cloudX = map(vocal, 0, 100, 0.1, 1.5); //vocal map for cloud's speed
-  let cloudY = map(vocal, 0, 100, 0, 75); //vocal map for cloud's y position
-  cloudMove += cloudX; //moves the cloud horizontally
-  console.log(cloudMove);
-  
-  image(cloudType, -100 + cloudMove, cloudPosY + cloudY); //inserts moving cloud
-
-  if(cloudMove > 500)
-  {
-    cloudMove =0;
-  }
-}
-
   // Define the cloud class
 
-// class Cloud {
-//   #posX = 0;
-//   #posY = Math.floor(Math.random() * 500);
+class Cloud {
+  #cloudMove = 0;
+  constructor(x, y, cloudType, cloudRestart){
+        this.x = x;
+        this.y = y;
+        this.cloudType = cloudType;
+        this.cloudRestart = cloudRestart;
+    
+  }
+  drawCloud(vocal){
+    let cloudX = map(vocal, 0, 100, 0.1, 1.5); //vocal map for cloud's speed
+    let cloudY = map(vocal, 0, 100, 0, 75); //vocal map for cloud's y position
+    this.#cloudMove += cloudX; //moves the cloud horizontally
+    
+    image(this.cloudType, this.x + this.#cloudMove, this.y + cloudY); //inserts moving cloud
 
-//   constructor(){
-//         //this.vocal = vocal;
-//         //this.cloudType = cloudType
-    
-//   }
-//   drawCloud(vocal, cloudType){
-//     let cloudX = map(vocal, 0, 100, 0.1, 1.5); //vocal map for cloud's speed
-//     let cloudY = map(vocal, 0, 100, 0, 75); //vocal map for cloud's y position
-//     cloudMove += cloudX; //moves the cloud horizontally
-    
-//     image(cloudType, -100+cloudMove, this.#posY + cloudY); //inserts moving cloud
-//   }
-// } 
+    if(this.#cloudMove > this.cloudRestart) {
+      this.#cloudMove = this.x;
+    }
+} 
+}
 
 function bigStar(other, x, y){
-    translate(x, y)
+    let starSize = map(other, 0, 100, 0, 200)
+    push();
+    translate(x, y);
     noStroke();
-    fill(246, 216, 146)
+    fill(246, 216, 146);
     beginShape();
-    vertex(0, -75 - other);
+    vertex(0, -75 - starSize);
     vertex(10, -5);
-    vertex(75 + other, 0);
+    vertex(75 + starSize, 0);
     vertex(10, 10);
-    vertex(0, 75 + other);
+    vertex(0, 75 + starSize);
     vertex(-6, 10);
-    vertex(-75 - other, 0);
+    vertex(-75 - starSize, 0);
     vertex(-5, -5);
     endShape(CLOSE);
+    pop();
   }
 
-function sun(bass, counter){
+function sun(bass, counter, x, y){
 let rayLength = map(bass, 0, 100, 100, 300);
     let rotation = 12;
     push();
-    translate (175,175);
+    translate (x, y);
 
     rotate(counter*0.15);
     for (let i = 0; i <= 30; i++) {
@@ -373,7 +343,7 @@ let rayLength = map(bass, 0, 100, 100, 300);
     noStroke();
     let sunMap = map(bass, 0, 100, 125, 250);
     fill(247, 237, 171, 1);
-    circle(175, 175, sunMap);
+    circle(x, y, sunMap);
   }
 
 function starry(drum){
