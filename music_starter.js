@@ -1,31 +1,29 @@
-let firstRun = true;
-let doorArray = new Array (17); // door array
+let firstRun = true; //loading items
+let doorArray = new Array (17); //door array
 let cloudArray = new Array(6); //cloud array
 let oneVinesArray = new Array(2); //oneVines array
 let twoVinesArray = new Array(2); //twoVines array
-//let randomCloud = 0; 
-//let cloudMove = 0; 
-let rippleX = 250;
-let rippleY = 0;
-let gradientMove = 0;
-let x = 0;
+let rippleX = 250; //ripple's starting width
+let rippleY = 0; //offset ripple's y coordinate & height
+let gradientMove = 0; //declaring gradient's move
 let flowerBack = []; //back flower array
 let flowerFront = []; //front flower array
-let doorInterval = 150;
-let doorOpening = 7900;
-let sunSet = 0;
+let doorInterval = 75; //
+let doorOpening = 7900; //door's start opening time
+let sunSet = 0; //declaring sun's setting 
+let darkenSky = 0; //declaring sky's darkening
 
-//cloud classes
-let cloud0;
-let cloud1;
-let cloud2;
-let cloud3;
-let cloud4;
-let cloud5;
+//declaring clouds
+let cloud0; //declaring cloud0
+let cloud1; //declaring cloud1
+let cloud2; //declaring cloud2
+let cloud3; //declaring cloud3
+let cloud4; //declaring cloud4
+let cloud5; //declaring cloud5
 
 // vocal, drum, bass, and other are volumes ranging from 0 to 100
 function draw_one_frame(words, vocal, drum, bass, other, counter) {
-  background(189, 227, 242);
+  background(189, 227, 242); //light blue sky
   textFont('Verdana'); // please use CSS safe fonts
   rectMode(CENTER)
   textSize(24);
@@ -34,32 +32,33 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   if(firstRun){
 
     for (let i = 0; i < cloudArray.length; i++){
-      cloudArray[i] = loadImage("images/clouds/cloud" + i + ".png");
+      cloudArray[i] = loadImage("images/clouds/cloud" + i + ".png"); //loads clouds into an array
     }
 
     for (let i = 0; i < doorArray.length; i++){
-      doorArray[i] = loadImage("images/door/door" + i + ".png");
+      doorArray[i] = loadImage("images/door/door" + i + ".png"); //loads doors into an array
     }
 
     for (let i = 0; i < oneVinesArray.length; i++){
-      oneVinesArray[i] = loadImage("images/door/oneVines" + i + ".png");
+      oneVinesArray[i] = loadImage("images/door/oneVines" + i + ".png"); //loads landscape 1's vines (oneVines) into an array 
     }
 
     for (let i = 0; i < twoVinesArray.length; i++){
-      twoVinesArray[i] = loadImage("images/door/twoVines" + i + ".png");
+      twoVinesArray[i] = loadImage("images/door/twoVines" + i + ".png"); //loads landscape 2's vines (twoVines) into an array
     }
 
-    //randomCloud = Math.floor(Math.random() * 6);
-    cloud0 = new Cloud(-390, 10, cloudArray[0], 1100);
-    cloud1 = new Cloud(-270, 125, cloudArray[1], 970);
-    cloud2 = new Cloud(-600, 140, cloudArray[2], 1450);
-    cloud3 = new Cloud(-400, 290, cloudArray[3], 1700);
-    cloud4 = new Cloud(-280, 400, cloudArray[4], 1200);
-    cloud5 = new Cloud(-1000, 160, cloudArray[5], 2500);
+    cloud0 = new Cloud(-450, 10, cloudArray[0], 1170); //assigning cloud variables to cloud0
+    cloud1 = new Cloud(-270, 125, cloudArray[1], 970); //assigning cloud variables to cloud1
+    cloud2 = new Cloud(-600, 140, cloudArray[2], 1450); //assigning cloud variables to cloud2
+    cloud3 = new Cloud(-400, 290, cloudArray[3], 1700); //assigning cloud variables to cloud3
+    cloud4 = new Cloud(-280, 400, cloudArray[4], 1200); //assigning cloud variables to cloud4
+    cloud5 = new Cloud(-1000, 160, cloudArray[5], 2500); //assigning cloud variables to cloud5
  
-    
+    darkenGradient = loadImage('images/darkenGradient.png'); //loads darken gradient
+    skyGradient = loadImage('images/skyGradient.png'); //loads sky gradient
 
-    skyGradient = loadImage('images/skyGradient.png'); //loads gradient sky
+    portal1 = loadImage('images/portal1.png'); //loads portal of landscape 1
+    portal2 = loadImage('images/portal2.png'); //loads portal of landscape 2
 
     bricks = loadImage('images/door/bricks.png'); //loads landscape 1's bricks
     doorScene2 = loadImage('images/door/doorScene2.png'); //loads door for scene 2
@@ -79,153 +78,95 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     firstRun = false;
 
   }
-
-  cloud0.drawCloud(vocal);
-  cloud1.drawCloud(vocal);
-  cloud2.drawCloud(vocal);
-  cloud3.drawCloud(vocal);
-  cloud4.drawCloud(vocal);
-  cloud5.drawCloud(vocal);
   
   //landscape 1: pond
-  if(counter < 11045){
+  if(counter < 11045){ //timing for landscape 1: pond
 
-    if(counter < doorOpening){
-      sun(bass, counter, 175, 175);
-    }
-    else{
-      sunSet += 0.1;
-      sun(bass, counter, 175, 175 + sunSet);
+    if(counter < doorOpening){ //only before door starts opening
+      let gradientY = map(other, 0, 100, 0, -300); //other map for gradient's y coordinate
       push();
-      scale(0.5);
-      bigStar(other, 720, 1300)
+      image(darkenGradient, 0, -550 + gradientY); //draws sky gradient
+      pop();
+
+      sun(bass, counter, 175, 175); //draws stationary sun
+    }
+    else{ //only after door starts opening
+      darkenSky += 0.1; //sun's setting speed
+      image(darkenGradient, 0, -550 + darkenSky); //draws darken gradient
+
+      sunSet += 0.25; //sun's setting speed
+      sun(bass, counter, 175, 175 + sunSet); //draws setting sun
+
+      push();
+      translate(345, 615); //star's centre at (330, 600)
+      scale(0.3); //scales down star to 0.35
+      star(drum, other); //draws star
       pop();
     }
 
-    let grassBack_move = map(drum, 0, 100, 0, 18); //drum map for back grass 
+    let grassBack_move = map(other, 0, 100, 0, 18); //drum map for back grass 
     image(grassBack, -200+grassBack_move, -100); //inserts back grass 
 
-    colorMode (RGB, 255, 255, 255);
-    let waterChange = map(other, 0, 100, 0, 1);
-    let waterLight = color(151, 207, 219);
-    let waterDark = color(91, 180, 199);
-    let waterBlend = lerpColor(waterLight, waterDark, waterChange)
-    fill(waterBlend);
-    ellipse(360, 1125, 1750, 400);
+    pondRipple(vocal, other);
 
-    // draws one ripple
-        let rippleStroke = map(other, 0, 100, 0, 15); //other map for 
-        let rippleWater = map(bass, 0, 100, 0, 0.75) ;
-        push();
-        ellipseMode(CENTER);
-        rippleX = rippleX + 1;
-        rippleY = rippleY + 0.3;
-        noFill(); //ripple edge
-        stroke(255, 255, 255, rippleWater);
-        strokeWeight(rippleStroke); //
-        ellipse(360, 1005+ rippleY * 0.4, rippleX, 40 + rippleY)
+    image(bricks, 0, 0); //draws bricks
 
-        rippleX = rippleX+1;
-        if(rippleX > 1500){ //maximum width of a ripple
-          rippleX = 250; //resets x coordinate for new ripple
-          rippleY = 0; //resets y coordinate for new ripple
-        }
-
-    image(bricks, 0, 0); //inserts bricks in landscape 1
+    push();
+    imageMode(CENTER); //x, y for door's centre
+    translate(360, 755); //translates to door's centre
+    scale(0.4, 0.46); //scales portal to door's size
+    image(portal2, 0, 0); //draws portal to landscape 2
+    pop();
 
     openDoor(counter); //opens the door
 
-    let vinesMove = int(map(other, 0, 100, 0, 2)); //other map for oneVines 
+    let vinesMove = int(map(drum, 0, 100, 0, 2)); //other map for oneVines 
     push();
-    image(oneVinesArray[vinesMove], 0, 0); //inserts vines for landscape 1 (oneVines)
+    image(oneVinesArray[vinesMove], 0, 0); //draws vines for landscape 1 (oneVines)
     pop();
 
+    cloud0.drawCloud(vocal); //draws cloud 0
+    cloud1.drawCloud(vocal); //draws cloud 1
+    cloud2.drawCloud(vocal); //draws cloud 2
+    cloud3.drawCloud(vocal); //draws cloud 3
+    cloud4.drawCloud(vocal); //draws cloud 4
+    cloud5.drawCloud(vocal); //draws cloud 5
   }
 
 //landscape 2: flower field
-  else {     
-    let gradientY = map(vocal, 0, 100, 0, -320);
-    push();
-    image(skyGradient, 0, gradientY);
-    pop();
+  else { //changesto landscape 2: flower field
+    let gradientY = map(other, 0, 100, 0, -320); //vocal map for gradient's y coordinate
+    image(skyGradient, 0, gradientY); //draws sky gradient
 
     push();
-    colorMode (RGB, 255, 255, 255, 1000);
-    let auroraBright = map(drum, 0, 100, 10, 600);
-    let auroraChange = map(drum, 0, 100, 0, 1);
-    let auroraPink = color(214, 112, 230, auroraBright);
-    let auroraPurple = color(142, 112, 230, auroraBright);
-    let auroraBlend = lerpColor(auroraPink, auroraPurple, auroraChange)
+    imageMode(CENTER); //x, y for door's centre
+    translate(360, 755); //translates to door's centre
+    scale(0.4, 0.46); //scales portal to door's size
+    image(portal1, 0, 0); //draws portal to landscape 1
+    pop();
+
+    aurora(vocal); //draws aurora
     
-    let auroraWidth = map(drum, 0, 100, 0, 30)
-    fill(auroraBlend);
-    noStroke();
+    starry(drum); //draws starry sky
+    sparkle(drum); //draws sparkling sky
 
-    beginShape();
-    vertex(350 - auroraWidth, 0);
-    bezierVertex(500 - auroraWidth, 280, 220 - auroraWidth, 320, 310 + auroraWidth, 500);
-    vertex(390 - auroraWidth, 500);
-    bezierVertex(410  + auroraWidth, 330, 650  + auroraWidth, 350, 690 + auroraWidth, 0);
-    endShape();
-
-    beginShape(); //middle aurora
-    vertex(375 - auroraWidth, 0);
-    bezierVertex(500 - auroraWidth, 280, 210 - auroraWidth, 320, 310 + auroraWidth, 500);
-    vertex(390  - auroraWidth, 500);
-    bezierVertex(420  + auroraWidth, 330, 650  + auroraWidth, 350, 665 + auroraWidth, 0);
-    endShape();
-
-    beginShape();
-    vertex(400 - auroraWidth, 0);
-    bezierVertex(500 - auroraWidth, 280, 240 - auroraWidth, 320, 310 + auroraWidth, 500);
-    vertex(390 - auroraWidth, 500);
-    bezierVertex(390  + auroraWidth, 330, 650  + auroraWidth, 350, 640 + auroraWidth, 0);
-    endShape();
+    push();
+    translate(415, 580); //
+    scale(0.25); //scales down sun to 0.25
+    sun(bass, counter, 0, 0);// draws sun
     pop();
+
+    push();
+    translate(170, 425); //star's centre at (160, 350)
+    star(drum, other); //draws star
+    pop();
+  
+    flowerField(bass, other); //draws flower field & door
     
-    starry(drum); //
-    sparkle(drum); //
-
-    push();
-    translate(415, 580);
-    scale(0.25);
-    sun(bass, counter, 0, 0);
-    pop();
-    
-    push();
-    scale(1.5);
-    bigStar(other, 180, 240);
-    pop();
-    
-    let grassBack_move = map(drum, 0, 100, 0, 25); //drum map for back grass 
-    image(grassBack, -200+grassBack_move, -15); //inserts back grass 
-
-    image(doorScene2, 0, 0); //inserts door for scene 2
-    let vinesMove = int(map(drum, 0, 100, 0, 2)); //other map for twoVines 
-    push();
-    image(twoVinesArray[vinesMove], 0, 0); //inserts oneVines
-    pop();
-
-    let grassMiddle_move = map(drum, 0, 100, 0, 75); //drum map for middle grass 
-    image(grassMiddle, -200+grassMiddle_move, 15); //inserts middle grass 
-
-    let flowerMove = int(map(drum, 0, 100, 0, 3)); //drum map for flowers 
-    push();
-    image(flowerBack[flowerMove], 0, 0); //inserts back flowers 
-    pop();
-
-    let grassFront_move = map(drum, 0, 100, 0, 50); //drum map for front grass 
-    image(grassFront, -200+grassFront_move, 0); //inserts front grass 
-
-    let flowerPink_move = map(drum, 0, 100, 0, 15); //drum map for pink flowers 
-    image(flowerPink, 0+flowerPink_move, 0+flowerPink_move);
-    push();
-    image(flowerFront[flowerMove], 0, 0); //inserts pink flowers
-    pop();
   }
 
   }
-
+//opening door function
 function openDoor(counter){
   if(counter > doorOpening && counter <= doorOpening + doorInterval){
     image(doorArray[1], 0, 0); 
@@ -280,76 +221,148 @@ function openDoor(counter){
   }
 }
 
-  // Define the cloud class
-
+//define the cloud class
 class Cloud {
   #cloudMove = 0;
   constructor(x, y, cloudType, cloudRestart){
-        this.x = x;
-        this.y = y;
-        this.cloudType = cloudType;
-        this.cloudRestart = cloudRestart;
+        this.x = x; //cloud's starting x coordinate
+        this.y = y; //cloud's starting y coordinate
+        this.cloudType = cloudType; //
+        this.cloudRestart = cloudRestart; //cloud's maximum x coordinate
     
   }
   drawCloud(vocal){
     let cloudX = map(vocal, 0, 100, 0.1, 1.5); //vocal map for cloud's speed
-    let cloudY = map(vocal, 0, 100, 0, 75); //vocal map for cloud's y position
+    let cloudY = map(vocal, 0, 100, 0, 100); //vocal map for cloud's y position
     this.#cloudMove += cloudX; //moves the cloud horizontally
     
-    image(this.cloudType, this.x + this.#cloudMove, this.y + cloudY); //inserts moving cloud
+    image(this.cloudType, this.x + this.#cloudMove, this.y + cloudY); //draws moving cloud
 
     if(this.#cloudMove > this.cloudRestart) {
-      this.#cloudMove = this.x;
+      this.#cloudMove = this.x; //cloud restarts to it's starting x coordinate
     }
 } 
 }
 
-function bigStar(other, x, y){
-    let starSize = map(other, 0, 100, 0, 200)
-    push();
-    translate(x, y);
-    noStroke();
-    fill(246, 216, 146);
-    beginShape();
-    vertex(0, -75 - starSize);
-    vertex(10, -5);
-    vertex(75 + starSize, 0);
-    vertex(10, 10);
-    vertex(0, 75 + starSize);
-    vertex(-6, 10);
-    vertex(-75 - starSize, 0);
-    vertex(-5, -5);
-    endShape(CLOSE);
-    pop();
-  }
-
+//sun function
 function sun(bass, counter, x, y){
-let rayLength = map(bass, 0, 100, 100, 300);
-    let rotation = 12;
-    push();
-    translate (x, y);
+  let rayLength = map(bass, 0, 100, 100, 300); //bass map for sun's ray length
+  let rotation = 12; //number of rays
+  push();
+  translate (x, y); //sun ray's centre
+  rotate(counter*0.15); //spinning sun ray's speed
+  for (let i = 0; i <= 30; i++) {
+    rotate(rotation); //evenly space 12 sun rays
+    colorMode (RGB, 255, 255, 255, 1); //RGB colour mode & transpaency
+    strokeWeight(10); //sun ray's line weight
+    stroke(247, 237, 171, 0.6); //yellow sun rays & transparency
+    line(0, 100, 0, rayLength, -10); //draws sun ray
+  }
+  pop();
 
-    rotate(counter*0.15);
-    for (let i = 0; i <= 30; i++) {
-      rotate(rotation);
-      colorMode (RGB, 255, 255, 255, 1);
-      strokeWeight(10);
-      stroke(247, 237, 171, 0.6);
-      line(0, 100, 0, rayLength, -10);
-    }
-    
-    pop();
-
-    noStroke();
-    let sunMap = map(bass, 0, 100, 125, 250);
-    fill(247, 237, 171, 1);
-    circle(x, y, sunMap);
+  noStroke(); //no outline
+  let sunMap = map(bass, 0, 100, 125, 250); //bass map for sun's centre size
+  fill(247, 237, 171, 1); //yellow sun
+  circle(x, y, sunMap); //draws sun's centre
   }
 
+function pondRipple(vocal, other){
+  colorMode (RGB, 255, 255, 255); //RBG colour mode
+  let waterChange = map(other, 0, 100, 0, 1); //other map for water's colour change
+  let waterLight = color(151, 207, 219); //light turquiose water
+  let waterDark = color(91, 180, 199); //dark turquiose water
+  let waterBlend = lerpColor(waterLight, waterDark, waterChange) //blending light & dark turquiose water
+  fill(waterBlend); //blended light & dark turquiose water
+  ellipse(360, 1125, 1750, 400); //draws pond
+  
+  let rippleStroke = map(vocal, 0, 100, 0, 20); //other map for ripple's line weight
+  let rippleWater = map(vocal, 0, 100, 0, 0.75) ; //bass map for ripple's transparency
+  push();
+  ellipseMode(CENTER); //centre of the ripple
+  rippleX = rippleX + 1; //ripple's width growth speed
+  rippleY = rippleY + 0.3; //ripple's height growth speed
+  noFill(); //ripple line
+  stroke(255, 255, 255, rippleWater); //white ripple & transparency
+  strokeWeight(rippleStroke); //ripple's line weight
+  ellipse(360, 1005 + (rippleY * 0.4), rippleX, 40 + rippleY); //draws ripple
+
+  rippleX = rippleX+1;
+  if(rippleX > 1500){ //maximum width of a ripple
+    rippleX = 250; //resets x coordinate for new ripple
+    rippleY = 0; //resets y coordinate for new ripple
+  }
+}
+
+  //flower field & door function
+  function flowerField(bass, other){
+    let grassBack_move = map(bass, 0, 100, 0, 25); //drum map for back grass swaying
+    image(grassBack, -200+grassBack_move, -15); //draws back grass 
+
+    image(doorScene2, 0, 0); //draws door
+    let vinesMove = int(map(other, 0, 100, 0, 2)); //draws map for scene 2 vines 
+    push();
+    image(twoVinesArray[vinesMove], 0, 0); //draws vines for scene 2
+    pop();
+
+    let grassMiddle_move = map(bass, 0, 100, 0, 75); //drum map for middle grass swaying
+    image(grassMiddle, -200+grassMiddle_move, 15); //draws middle grass 
+
+    let flowerMove = int(map(other, 0, 100, 0, 3)); //drum map for flowers swaying
+    push();
+    image(flowerBack[flowerMove], 0, 0); //draws back flowers 
+    pop();
+
+    let grassFront_move = map(bass, 0, 100, 0, 50); //drum map for front grass swaying
+    image(grassFront, -200+grassFront_move, 0); //draws front grass 
+
+    let flowerPink_move = map(other, 0, 100, 0, 15); //drum map for pink flowers swaying
+    image(flowerPink, 0+flowerPink_move, 0+flowerPink_move);
+    push();
+    image(flowerFront[flowerMove], 0, 0); //draws pink flowers
+    pop();
+  }
+
+  //aurora function
+function aurora(vocal){
+    colorMode (RGB, 255, 255, 255, 1000);
+    let auroraBright = map(vocal, 0, 100, 10, 600); //drum map for aurora's transparency(brightness)
+    let auroraChange = map(vocal, 0, 100, 0, 1); //drum map for for aurora's colour change
+    let auroraPink = color(214, 112, 230, auroraBright); //pink aurora colour
+    let auroraPurple = color(142, 112, 230, auroraBright); //purple aurora colour
+    let auroraBlend = lerpColor(auroraPink, auroraPurple, auroraChange) //blending pink & purple auroras
+    
+    let auroraWidth = map(vocal, 0, 100, 0, 30); //drum map for aurora's width
+    fill(auroraBlend); //blended pink & purple aurora
+    noStroke(); //no outline
+
+    beginShape(); //outermost aurora
+    vertex(350 - auroraWidth, 0); //top left vertex
+    bezierVertex(500 - auroraWidth, 280, 220 - auroraWidth, 320, 310 + auroraWidth, 500); //bezier curve & bottom left vertex
+    vertex(390 - auroraWidth, 500); //bottom right vertex
+    bezierVertex(410  + auroraWidth, 330, 650  + auroraWidth, 350, 690 + auroraWidth, 0); //bezzier curve & top right vertex
+    endShape();
+
+    beginShape(); //middle aurora
+    vertex(375 - auroraWidth, 0);//top left vertex
+    bezierVertex(500 - auroraWidth, 280, 210 - auroraWidth, 320, 310 + auroraWidth, 500); //bezier curve & bottom left vertex
+    vertex(390  - auroraWidth, 500); //bottom right vertex
+    bezierVertex(420  + auroraWidth, 330, 650  + auroraWidth, 350, 665 + auroraWidth, 0); //bezzier curve & top right vertex
+    endShape();
+
+    beginShape(); //innermost aurora
+    vertex(400 - auroraWidth, 0);//top left vertex
+    bezierVertex(500 - auroraWidth, 280, 240 - auroraWidth, 320, 310 + auroraWidth, 500); //bezier curve & bottom left vertex
+    vertex(390 - auroraWidth, 500); //bottom right vertex
+    bezierVertex(390  + auroraWidth, 330, 650  + auroraWidth, 350, 640 + auroraWidth, 0);//bezzier curve & top right vertex
+    endShape();
+}
+
+//starry sky function
 function starry(drum){
 
-  let starryBright = map(drum, 0, 100, 0, 10000);
+  let starryBright = map(drum, 0, 100, 0.5, 1); //drum map for starry's transparency(brightness)
 
+  //draws stars at [x, y]
   let starryArray = [
   [640, 80],
   [579, 124],
@@ -376,28 +389,32 @@ function starry(drum){
     let y = starryArray[i][1];
 
   push();
-  colorMode (RGB, 255, 255, 255, 10000);
-  translate(x, y);
+  colorMode (RGB, 255, 255, 255, 1); //RBG colour mode & alpha value
+  translate(x, y); //starry's centre coordinates from starryArray
   scale(0.15);
-  noStroke();
-  fill(255, 255, 255, starryBright);
-  beginShape();
-  vertex(0, -100);
-  bezierVertex(0, -50, 50, 0, 50, 0);
-  bezierVertex(50, 0, 0, 50, 0, 100);
-  bezierVertex(  0, 50, -50, 0, -50, 0);
-  bezierVertex(-50, 0, 0,-50, 0,-100);
+  noStroke(); //no outline
+  fill(255, 255, 255, starryBright); //white starry & transparency
+  beginShape(); //starry shape
+  vertex(0, -100); //top vertex
+  bezierVertex(0, -50, 50, 0, 50, 0); //bezier curve & right vertex
+  bezierVertex(50, 0, 0, 50, 0, 100); //bezier curve & bottom vertex
+  bezierVertex(  0, 50, -50, 0, -50, 0); //bezier curve & left vertex
+  bezierVertex(-50, 0, 0,-50, 0,-100); //bezier curve & top vertex
   endShape();
   pop();
+
+  console.log("TT")
   
  }
 }
 
+//sparkling sky function
 function sparkle(drum){
 
-    let sparkleBright = map(drum, 0, 100, 0.5, 1);
-    let sparkleSize = map(drum, 0, 100, 5, 10);
+    let sparkleBright = map(drum, 0, 100, 0.5, 1); //drum map for sparkle's transparency(brightness)
+    let sparkleSize = map(drum, 0, 100, 5, 10); //drum map for sparkle's size
   
+      //draws sparkles at [x, y]
     let sparkleArray = [
     [500, 100],
     [640, 180],
@@ -432,60 +449,42 @@ function sparkle(drum){
        let y = sparkleArray[i][1];
        
       push();
-      colorMode (RGB, 255, 255, 255, 1);
-      stroke(255, 255, 255, sparkleBright);
-      strokeWeight(sparkleSize)
-      point(x, y)
+      colorMode (RGB, 255, 255, 255, 1); //RBG colour mode & alpha value
+      stroke(255, 255, 255, sparkleBright); //white sparkle & transparency(brightness)
+      strokeWeight(sparkleSize) //sparkle's size
+      point(x, y) //sparkle's position
       pop();
 
     }
   }
 
-  // function gradientSky() {
-//   colorMode(HSB, 360, 100, 100);
-//   let height = 1280
-//   let startColor = color(221, 83, 61);
-//   let endColor = color(209, 41, 92);
-//   for (let y = 0; y < height ; y += 1) {
-//     let amt = map(y, 0, height, 0, 1);
-//     let gradColor = lerpColor(startColor, endColor, amt);
-//     stroke(gradColor);
-//     line(0, y, width, y);
-//   }
-//   return colorsys.rgb_to_hsv({ r: 255, g: 255, b: 255 })
-// }
+  //star function
+function star(drum, other){
 
-  //let bar_spacing = height / 10;
-  //  let bar_height = width / 12;
-  //  let bar_pos_x = width / 2;
- 
+  //fills star with RGB values
+   let = starColourArray = [
+    [252, 238, 167],
+    [255, 214, 181],
+    [254, 222, 255]
+   ]
 
-  //  // vocal bar is red
-  //  fill(200, 0, 0);
-  //  rect(bar_pos_x, height / 2 + 1 * bar_spacing, 4 * vocal, bar_height);
-  //  fill(0);
-  //  text("vocals", bar_pos_x, height / 2 + 1 * bar_spacing + 8);
- 
-  //  // drum bar is green
-  //  fill(0, 200, 0);
-  //  rect(bar_pos_x, height / 2 + 2 * bar_spacing, 4 * drum, bar_height);
-  //  fill(0);
-  //  text("drums", bar_pos_x, height / 2 + 2 * bar_spacing + 8);
- 
-  //  // bass bar is blue
-  //  fill(50, 50, 240);
-  //  rect(bar_pos_x, height / 2 + 3 * bar_spacing, 4 * bass, bar_height);
-  //  fill(0);
-  //  text("bass", bar_pos_x, height / 2 + 3 * bar_spacing + 8);
- 
-  //  // other bar is white
-  //  fill(200, 200, 200);
-  //  rect(bar_pos_x, height / 2 + 4 * bar_spacing, 4 * other, bar_height);
-  //  fill(0);
-  //  text("other", bar_pos_x, height / 2 + 4 * bar_spacing + 8);
-  //  fill(255, 255, 0);
- 
-  //  // display "words"
-  //  textAlign(CENTER);
-  //  textSize(vocal);
-  //  text(words, width/2, height/3);
+    let starColour = int(map(drum, 0, 100, 0, 2)); //drum map for star's colour
+    let starLength = map(other, 0, 100, 0, 250); //other map for  star's arm length
+    let starSize = map(other, 0, 100, 1, 1.25); //other map for  star's arm length
+    
+    push();
+    scale(starSize); //scales star's size
+    noStroke(); //no outline
+    fill(starColourArray[starColour]); //star's colour from starColourArray
+    beginShape(); //star's shape
+    vertex(0, -75 - starLength); //top vertex
+    vertex(25, -25); //inner top right vertex
+    vertex(50 + starLength, 0); //right vertex
+    vertex(25, 25); //inner bottom right vertex
+    vertex(0, 75 + starLength); //bottom vertex
+    vertex(-25, 25); //inner bottom left vertex
+    vertex(-50 - starLength, 0); //left vertex
+    vertex(-25, -25);//inner top left vertex
+    endShape(CLOSE);
+    pop();
+  }
