@@ -3,13 +3,15 @@ let doorArray = new Array (17); //door array
 let cloudArray = new Array(6); //cloud array
 let oneVinesArray = new Array(2); //oneVines array
 let twoVinesArray = new Array(2); //twoVines array
+let flowerBackArray = new Array(2); //back flower array
+let flowerFrontArray = new Array(2); //front flower array
 let rippleX = 250; //ripple's starting width
 let rippleY = 0; //offset ripple's y coordinate & height
 let gradientMove = 0; //declaring gradient's move
 let flowerBack = []; //back flower array
 let flowerFront = []; //front flower array
-let doorInterval = 75; //
-let doorOpening = 7900; //door's start opening time
+let doorInterval = 75; //interval (counter) between door changes
+let doorOpening = 7900; //door's start opening time (counter)
 let sunSet = 0; //declaring sun's setting 
 let darkenSky = 0; //declaring sky's darkening
 
@@ -27,7 +29,6 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   textFont('Verdana'); // please use CSS safe fonts
   rectMode(CENTER)
   textSize(24);
-  
 
   if(firstRun){
 
@@ -47,12 +48,20 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
       twoVinesArray[i] = loadImage("images/door/twoVines" + i + ".png"); //loads landscape 2's vines (twoVines) into an array
     }
 
-    cloud0 = new Cloud(-450, 10, cloudArray[0], 1170); //assigning cloud variables to cloud0
-    cloud1 = new Cloud(-270, 125, cloudArray[1], 970); //assigning cloud variables to cloud1
-    cloud2 = new Cloud(-600, 140, cloudArray[2], 1450); //assigning cloud variables to cloud2
-    cloud3 = new Cloud(-400, 290, cloudArray[3], 1700); //assigning cloud variables to cloud3
-    cloud4 = new Cloud(-280, 400, cloudArray[4], 1200); //assigning cloud variables to cloud4
-    cloud5 = new Cloud(-1000, 160, cloudArray[5], 2500); //assigning cloud variables to cloud5
+    for (let i = 0; i < flowerBackArray.length; i++){
+      flowerBackArray[i] = loadImage("images/field/flowers/flowerBack" + i + ".png"); //loads back flowers into an array
+    }
+
+    for (let i = 0; i < flowerFrontArray.length; i++){
+      flowerFrontArray[i] = loadImage("images/field/flowers/flowerFront" + i + ".png"); //loads front flowers into an array
+    }
+
+    cloud0 = new Cloud(-450, 10, cloudArray[0], 1.25, 100, 1170); //assigning cloud variables to cloud0
+    cloud1 = new Cloud(-270, 125, cloudArray[1], 1.75, 130, 970); //assigning cloud variables to cloud1
+    cloud2 = new Cloud(-600, 140, cloudArray[2], 2, 175, 1450); //assigning cloud variables to cloud2
+    cloud3 = new Cloud(-400, 290, cloudArray[3], 2.5, 225, 1700); //assigning cloud variables to cloud3
+    cloud4 = new Cloud(-280, 400, cloudArray[4], 1.50, 150, 1200); //assigning cloud variables to cloud4
+    cloud5 = new Cloud(-1000, 160, cloudArray[5], 1.1, 75, 2500); //assigning cloud variables to cloud5
  
     darkenGradient = loadImage('images/darkenGradient.png'); //loads darken gradient
     skyGradient = loadImage('images/skyGradient.png'); //loads sky gradient
@@ -67,16 +76,26 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     grassMiddle = loadImage('images/field/grass/grassMiddle.png'); //loads middle grass 
     grassFront = loadImage('images/field/grass/grassFront.png'); //loads front grass 
 
-    flowerBack.push(loadImage('images/field/flowers/flowerBack0.png')); //loads back right flowers
-    flowerBack.push(loadImage('images/field/flowers/flowerBack1.png')); //loads back centre flowers 
-    flowerBack.push(loadImage('images/field/flowers/flowerBack2.png')); //loads back left flowers
-    flowerFront.push(loadImage('images/field/flowers/flowerFront0.png')); //loads front right flowers 
-    flowerFront.push(loadImage('images/field/flowers/flowerFront1.png')); //loads front centre flowers
-    flowerFront.push(loadImage('images/field/flowers/flowerFront2.png')); //loads front left flowers
+    // flowerBack.push(loadImage('images/field/flowers/flowerBack0.png')); //loads back right flowers
+    // flowerBack.push(loadImage('images/field/flowers/flowerBack1.png')); //loads back centre flowers 
+    // flowerBack.push(loadImage('images/field/flowers/flowerBack2.png')); //loads back left flowers
+    // flowerFront.push(loadImage('images/field/flowers/flowerFront0.png')); //loads front right flowers 
+    // flowerFront.push(loadImage('images/field/flowers/flowerFront1.png')); //loads front centre flowers
+    // flowerFront.push(loadImage('images/field/flowers/flowerFront2.png')); //loads front left flowers
     flowerPink = loadImage('images/field/flowers/flowerPink.png'); //loads pink flowers
 
     firstRun = false;
+  }
 
+  //reinitializing variables
+  if(firstRun == false && counter == 0){
+     rippleX = 250; //reinitializing rippleX
+     rippleY = 0; //reinitializing ripple
+     gradientMove = 0; //reinitializing gradientMove
+     doorInterval = 75; //reinitializing doorInterval
+     doorOpening = 7900; //reinitializing doorOpening
+     sunSet = 0; //reinitializing sunSet
+     darkenSky = 0; //reinitializing darkenSky
   }
   
   //landscape 1: pond
@@ -87,15 +106,29 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
       push();
       image(darkenGradient, 0, -550 + gradientY); //draws sky gradient
       pop();
-
       sun(bass, counter, 175, 175); //draws stationary sun
+      console.log(other)
     }
     else{ //only after door starts opening
       darkenSky += 0.1; //sun's setting speed
-      image(darkenGradient, 0, -550 + darkenSky); //draws darken gradient
+      image(darkenGradient, 0, -733 + darkenSky); //draws darken gradient
 
       sunSet += 0.25; //sun's setting speed
       sun(bass, counter, 175, 175 + sunSet); //draws setting sun
+    }
+
+    let grassBack_move = map(other, 0, 100, 0, 18); //drum map for back grass 
+    image(grassBack, -200+grassBack_move, -100); //inserts back grass 
+
+    pondRipple(vocal, other);
+
+    if(counter > doorOpening){//open portal to landscape 2
+      push();
+      imageMode(CENTER); //x, y for door's centre
+      translate(360, 755); //translates to door's centre
+      scale(0.4, 0.46); //scales portal to door's size
+      image(portal2, 0, 0); //draws portal to landscape 2
+      pop();
 
       push();
       translate(345, 615); //star's centre at (330, 600)
@@ -104,19 +137,7 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
       pop();
     }
 
-    let grassBack_move = map(other, 0, 100, 0, 18); //drum map for back grass 
-    image(grassBack, -200+grassBack_move, -100); //inserts back grass 
-
-    pondRipple(vocal, other);
-
     image(bricks, 0, 0); //draws bricks
-
-    push();
-    imageMode(CENTER); //x, y for door's centre
-    translate(360, 755); //translates to door's centre
-    scale(0.4, 0.46); //scales portal to door's size
-    image(portal2, 0, 0); //draws portal to landscape 2
-    pop();
 
     openDoor(counter); //opens the door
 
@@ -134,7 +155,7 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   }
 
 //landscape 2: flower field
-  else { //changesto landscape 2: flower field
+  else { //changes to landscape 2: flower field
     let gradientY = map(other, 0, 100, 0, -320); //vocal map for gradient's y coordinate
     image(skyGradient, 0, gradientY); //draws sky gradient
 
@@ -161,14 +182,13 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     star(drum, other); //draws star
     pop();
   
-    flowerField(bass, other); //draws flower field & door
-    
+    flowerField(bass, drum, other); //draws flower field & door 
   }
 
   }
 //opening door function
-function openDoor(counter){
-  if(counter > doorOpening && counter <= doorOpening + doorInterval){
+function openDoor(counter){ //opens the door
+  if(counter > doorOpening && counter <= doorOpening + doorInterval){ //door opens when conuter is 7900 and closes when 11045
     image(doorArray[1], 0, 0); 
   }
   else if(counter > doorOpening + doorInterval && counter <= doorOpening + (doorInterval*2)) {
@@ -224,16 +244,19 @@ function openDoor(counter){
 //define the cloud class
 class Cloud {
   #cloudMove = 0;
-  constructor(x, y, cloudType, cloudRestart){
+  constructor(x, y, cloudType, cloudMapX, cloudMapY, cloudRestart){
         this.x = x; //cloud's starting x coordinate
         this.y = y; //cloud's starting y coordinate
-        this.cloudType = cloudType; //
+        this.cloudType = cloudType; //cloud's shape
+        this.cloudMapX = cloudMapX; //cloud's speed map
+        this.cloudMapY = cloudMapY; //cloud's y position map
         this.cloudRestart = cloudRestart; //cloud's maximum x coordinate
     
   }
   drawCloud(vocal){
-    let cloudX = map(vocal, 0, 100, 0.1, 1.5); //vocal map for cloud's speed
-    let cloudY = map(vocal, 0, 100, 0, 100); //vocal map for cloud's y position
+    
+    let cloudX = map(vocal, 0, 100, 0.1, this.cloudMapX); //vocal map for cloud's speed
+    let cloudY = map(vocal, 0, 100, 0, this.cloudMapY); //vocal map for cloud's y position
     this.#cloudMove += cloudX; //moves the cloud horizontally
     
     image(this.cloudType, this.x + this.#cloudMove, this.y + cloudY); //draws moving cloud
@@ -275,28 +298,29 @@ function pondRipple(vocal, other){
   fill(waterBlend); //blended light & dark turquiose water
   ellipse(360, 1125, 1750, 400); //draws pond
   
-  let rippleStroke = map(vocal, 0, 100, 0, 20); //other map for ripple's line weight
-  let rippleWater = map(vocal, 0, 100, 0, 0.75) ; //bass map for ripple's transparency
+  let rippleStroke = map(vocal, 0, 100, 0, 20); //vocal map for ripples's line weight
+  let rippleWater = map(vocal, 0, 100, 0, 0.75) ; //vocal map for ripple's transparency
   push();
   ellipseMode(CENTER); //centre of the ripple
-  rippleX = rippleX + 1; //ripple's width growth speed
-  rippleY = rippleY + 0.3; //ripple's height growth speed
+  rippleX = rippleX + 1.25; //ripple's width growth speed
+  rippleY = rippleY + 0.47; //ripple's height growth speed
   noFill(); //ripple line
   stroke(255, 255, 255, rippleWater); //white ripple & transparency
   strokeWeight(rippleStroke); //ripple's line weight
-  ellipse(360, 1005 + (rippleY * 0.4), rippleX, 40 + rippleY); //draws ripple
+  ellipse(360, 1005 + (rippleY * 0.35), rippleX, 40 + rippleY); //draws ripple
 
   rippleX = rippleX+1;
-  if(rippleX > 1500){ //maximum width of a ripple
+  if(rippleX > 1812){ //maximum width of a ripple
     rippleX = 250; //resets x coordinate for new ripple
     rippleY = 0; //resets y coordinate for new ripple
   }
 }
 
   //flower field & door function
-  function flowerField(bass, other){
+  function flowerField(bass, drum, other){
+
     let grassBack_move = map(bass, 0, 100, 0, 25); //drum map for back grass swaying
-    image(grassBack, -200+grassBack_move, -15); //draws back grass 
+    image(grassBack, -200 + grassBack_move, -15); //draws back grass 
 
     image(doorScene2, 0, 0); //draws door
     let vinesMove = int(map(other, 0, 100, 0, 2)); //draws map for scene 2 vines 
@@ -305,20 +329,21 @@ function pondRipple(vocal, other){
     pop();
 
     let grassMiddle_move = map(bass, 0, 100, 0, 75); //drum map for middle grass swaying
-    image(grassMiddle, -200+grassMiddle_move, 15); //draws middle grass 
+    image(grassMiddle, -200 + grassMiddle_move, 15); //draws middle grass 
 
-    let flowerMove = int(map(other, 0, 100, 0, 3)); //drum map for flowers swaying
+    let flowerMove = int(map(drum, 0, 100, 0, 2)); //drum map for flowers swaying
+    let flowerSlide = map(drum, 0, 100, 0, 15); //drum map for flowers sliding
     push();
-    image(flowerBack[flowerMove], 0, 0); //draws back flowers 
+    image(flowerBackArray[flowerMove], 0  + flowerSlide, 0); //draws back flowers 
     pop();
 
     let grassFront_move = map(bass, 0, 100, 0, 50); //drum map for front grass swaying
-    image(grassFront, -200+grassFront_move, 0); //draws front grass 
+    image(grassFront, -200 + grassFront_move, 0); //draws front grass 
 
-    let flowerPink_move = map(other, 0, 100, 0, 15); //drum map for pink flowers swaying
-    image(flowerPink, 0+flowerPink_move, 0+flowerPink_move);
+    image(flowerPink, 0 + flowerSlide, 0 + flowerSlide);
+
     push();
-    image(flowerFront[flowerMove], 0, 0); //draws pink flowers
+    image(flowerFrontArray[flowerMove], 0 + flowerSlide, 0); //draws pink flowers
     pop();
   }
 
@@ -361,6 +386,7 @@ function aurora(vocal){
 function starry(drum){
 
   let starryBright = map(drum, 0, 100, 0.5, 1); //drum map for starry's transparency(brightness)
+  let starrySize = map(drum, 0, 100, 1, 1.5); //drum map for starry's size
 
   //draws stars at [x, y]
   let starryArray = [
@@ -391,20 +417,17 @@ function starry(drum){
   push();
   colorMode (RGB, 255, 255, 255, 1); //RBG colour mode & alpha value
   translate(x, y); //starry's centre coordinates from starryArray
-  scale(0.15);
+  scale(starrySize); //size of the starry shape
   noStroke(); //no outline
   fill(255, 255, 255, starryBright); //white starry & transparency
   beginShape(); //starry shape
-  vertex(0, -100); //top vertex
-  bezierVertex(0, -50, 50, 0, 50, 0); //bezier curve & right vertex
-  bezierVertex(50, 0, 0, 50, 0, 100); //bezier curve & bottom vertex
-  bezierVertex(  0, 50, -50, 0, -50, 0); //bezier curve & left vertex
-  bezierVertex(-50, 0, 0,-50, 0,-100); //bezier curve & top vertex
+  vertex(0, -15); //top vertex
+  bezierVertex(0, -7.5, 7.5, 0, 7.5, 0); //bezier curve & right vertex
+  bezierVertex(7.5, 0, 0, 7.5, 0, 15); //bezier curve & bottom vertex
+  bezierVertex(  0, 7.5, -7.5, 0, -7.5, 0); //bezier curve & left vertex
+  bezierVertex(-7.5, 0, 0, -7.5, 0, -15); //bezier curve & top vertex
   endShape();
   pop();
-
-  console.log("TT")
-  
  }
 }
 
@@ -454,7 +477,6 @@ function sparkle(drum){
       strokeWeight(sparkleSize) //sparkle's size
       point(x, y) //sparkle's position
       pop();
-
     }
   }
 
